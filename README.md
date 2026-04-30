@@ -1,1 +1,41 @@
 # Giftly
+
+Privacy-first gifting platform. **Phase 1 MVP scope = Creator vertical only.**
+
+## Getting started
+
+1. Copy env template:
+
+```bash
+cp .env.local.example .env.local
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Run dev server:
+
+```bash
+npm run dev
+```
+
+## Non-negotiables
+
+1. The recipient's physical address NEVER appears in any payload sent to a client browser.
+   The address is read only inside Stripe webhook handlers or server-side cron jobs,
+   via the SECURITY DEFINER function get_creator_shipping_address().
+2. There are TWO Supabase clients: lib/supabase/server.ts (service_role) and lib/supabase/browser.ts (anon).
+   Never import server.ts into a 'use client' file.
+3. All database reads that go to a client are typed with explicit Pick<> DTOs in lib/dto/.
+   Never return raw row types to a client.
+4. Use Server Actions by default. API routes only for: Stripe webhook, OAuth callbacks.
+5. Validate all inputs with Zod schemas in lib/schemas/. Same schema validates client and server.
+6. Money is always integer cents. Never floats.
+7. Every PRIVACY-CRITICAL function gets a header comment "// PRIVACY-CRITICAL" so it can be grep-audited.
+8. Tailwind + shadcn/ui for UI. Don't add other UI libraries.
+9. Use the App Router, RSC by default, 'use client' only when needed (forms, Stripe Elements, interactivity).
+
+Stack: Next.js 14 App Router + TypeScript + Tailwind + shadcn/ui + Supabase + Stripe + Resend + Twilio Verify.
