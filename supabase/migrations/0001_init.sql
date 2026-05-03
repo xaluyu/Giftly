@@ -8,12 +8,11 @@
 create extension if not exists pgcrypto;
 create extension if not exists citext;
 
--- ============================================================
 -- 2) Encryption key configuration (MANUAL, ONE-TIME, OPERATOR-RUN)
--- ============================================================
--- IMPORTANT: The following line MUST NOT live in a versioned migration with a real key.
--- Run it ONCE manually in Supabase (SQL editor) with the real secret:
--- ALTER DATABASE postgres SET app.encryption_key = 'PASTE_KEY_HERE';
+-- The encryption key is stored in Supabase Vault, not in this migration.
+-- Run ONCE manually in the Supabase SQL Editor, with the real key, then delete the query:
+--   create extension if not exists supabase_vault with schema vault cascade;
+--   select vault.create_secret('REAL_KEY_HERE', 'app_encryption_key', 'Giftly creator address encryption key');
 
 -- ============================================================
 -- Schemas
@@ -255,7 +254,13 @@ begin
     raise exception 'p_accessed_by is required';
   end if;
 
-  v_key := current_setting('app.encryption_key');
+  select decrypted_secret into v_key
+  from vault.decrypted_secrets
+  where name = 'app_encryption_key';
+
+  if v_key is null then
+    raise exception 'encryption key not configured in vault';
+  end if;
 
   insert into public.audit_log_address_access (creator_id, accessed_by, gift_id, reason)
   values (p_creator_id, p_accessed_by, p_gift_id, p_reason);
@@ -304,7 +309,13 @@ begin
     raise exception 'caller must be authenticated and can only modify their own shipping address';
   end if;
 
-  v_key := current_setting('app.encryption_key');
+  select decrypted_secret into v_key
+  from vault.decrypted_secrets
+  where name = 'app_encryption_key';
+
+  if v_key is null then
+    raise exception 'encryption key not configured in vault';
+  end if;
 
   insert into private.private_creator_data (
     creator_id,
