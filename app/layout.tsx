@@ -9,7 +9,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Giftly",
-  description: "Privacy-first gifting platform",
+  description:
+    "Send gifts without ever asking for an address. Privacy-first gifting for creators.",
 };
 
 export default function RootLayout({
@@ -18,11 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${inter.variable} antialiased`}>
+      <body>{children}</body>
     </html>
   );
 }
