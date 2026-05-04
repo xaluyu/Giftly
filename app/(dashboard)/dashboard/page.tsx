@@ -12,10 +12,20 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("creator_profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile?.username) {
+    redirect("/onboarding");
+  }
+
   return (
     <div className="p-8">
       <p className="text-base">
-        Hello, {user.email} — Milestone 2 working.
+        Welcome, @{profile.username} — Milestone 2 working.
       </p>
     </div>
   );
