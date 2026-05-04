@@ -1,2 +1,2 @@
-export {};
+export type { CreatorShippingStatusDto } from "./shipping";
 

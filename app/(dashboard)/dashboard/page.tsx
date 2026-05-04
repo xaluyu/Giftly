@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createSessionClient } from "@/lib/supabase/server";
@@ -26,6 +27,14 @@ export default async function DashboardPage() {
     <div className="p-8">
       <p className="text-base">
         Welcome, @{profile.username} — Milestone 2 working.
+      </p>
+      <p className="mt-4">
+        <Link
+          href="/dashboard/shipping"
+          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Shipping
+        </Link>
       </p>
     </div>
   );
